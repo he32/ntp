@@ -2520,6 +2520,7 @@ clock_select(void)
 {
 	struct peer *peer;
 	int	i, j, k, n;
+	u_int	l;
 	int	nlist, nl2;
 	int	allow;
 	int	speer;
@@ -2831,10 +2832,10 @@ clock_select(void)
 	/*
 	 * Mark the candidates at this point as truechimers.
 	 */
-	for (i = 0; i < nlist; i++) {
-		peers[i].peer->new_status = CTL_PST_SEL_SELCAND;
+	for (l = 0; l < nlist; l++) {
+		peers[l].peer->new_status = CTL_PST_SEL_SELCAND;
 		DPRINTF(2, ("select: survivor %s %f\n",
-			stoa(&peers[i].peer->srcadr), peers[i].synch));
+			stoa(&peers[l].peer->srcadr), peers[l].synch));
 	}
 
 	/*
