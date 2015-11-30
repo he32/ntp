@@ -4227,14 +4227,17 @@ parse_process(
 static void
 mk_utcinfo(
 	   char *t,  // pointer to the output string buffer
-	   int wnt,
-	   int wnlsf,
+	   int swnt,
+	   int swnlsf,
 	   int dn,
 	   int dtls,
 	   int dtlsf,
 	   int size  // size of the output string buffer
 	   )
 {
+	unsigned int wnt = swnt;
+	unsigned int wnlsf = swnlsf;
+
 	/*
 	 * The week number transmitted by the GPS satellites for the leap date
 	 * is truncated to 8 bits only. If the nearest leap second date is off
