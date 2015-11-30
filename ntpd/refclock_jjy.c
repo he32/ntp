@@ -627,7 +627,7 @@ jjy_receive ( struct recvbuf *rbufp )
 #ifdef DEBUG
 	printf( "\nrefclock_jjy.c : %s : Len=%d  ", sFunctionName, pp->lencode ) ;
 	for ( i = 0 ; i < pp->lencode ; i ++ ) {
-	  if ( iscntrl( (unsigned char)pp->a_lastcode[i] & 0x7F ) ) {
+		if ( iscntrl( (unsigned char)pp->a_lastcode[i] & 0x7F ) ) {
 			printf( "<x%02X>", pp->a_lastcode[i] & 0xFF ) ;
 		} else {
 			printf( "%c", pp->a_lastcode[i] ) ;
@@ -2716,7 +2716,7 @@ jjy_start_telephone ( int unit, struct peer *peer, struct jjyunit *up )
 
 	iNumberOfDigitsOfPhoneNumber = iCommaCount = iCommaPosition = iFirstThreeDigitsCount = 0 ;
 	for ( i = 0 ; i < strlen( sys_phone[0] ) ; i ++ ) {
-	  if ( isdigit( (unsigned char)*(sys_phone[0]+i) ) ) {
+		if ( isdigit( (unsigned char)*(sys_phone[0]+i) ) ) {
 			if ( iFirstThreeDigitsCount < sizeof(sFirstThreeDigits)-1 ) {
 				sFirstThreeDigits[iFirstThreeDigitsCount++] = *(sys_phone[0]+i) ;
 			}
