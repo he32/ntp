@@ -39,12 +39,13 @@
 
 void
 gpstolfp(
-	 int weeks,
+	 int sweeks,
 	 int days,
 	 unsigned long  seconds,
 	 l_fp * lfp
 	 )
 {
+  unsigned int weeks = sweeks;
   if (weeks < GPSWRAP)
     {
       weeks += GPSWEEKS;
