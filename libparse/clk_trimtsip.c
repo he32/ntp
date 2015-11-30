@@ -251,7 +251,7 @@ cvt_trimtsip(
 		    case CMD_RCURTIME:
 			    {			/* GPS time */
 				    l_fp secs;
-				    int   week = getshort((unsigned char *)&mb(4));
+				    unsigned int   week = getshort((unsigned char *)&mb(4));
 				    l_fp utcoffset;
 				    l_fp gpstime;
 
