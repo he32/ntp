@@ -1134,9 +1134,11 @@ strtojint(
 static tok_ref
 json_token_skip(
 	const json_ctx * ctx,
-	tok_ref          tid)
+	tok_ref          stid)
 {
-	if (tid >= 0 && tid < ctx->ntok) {
+	u_int tid = stid;
+
+	if (tid < ctx->ntok) {
 		int len = ctx->tok[tid].size;
 		/* For arrays and objects, the size is the number of
 		 * ITEMS in the compound. Thats the number of objects in
