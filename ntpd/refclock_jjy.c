@@ -149,7 +149,7 @@
  */
 
 struct jjyRawDataBreak {
-	char	*pString ;
+	const char	*pString ;
 	int 	iLength ;
 } ;
 
@@ -588,7 +588,7 @@ jjy_receive ( struct recvbuf *rbufp )
 	l_fp	tRecvTimestamp;		/* arrival timestamp */
 	int 	rc ;
 	char	*pBuf, sLogText [ MAX_LOGTEXT ] ;
-	int 	iLen, iCopyLen ;
+	size_t 	iLen, iCopyLen ;
 	int 	i, j, iReadRawBuf, iBreakPosition ;
 
 	/*
@@ -627,7 +627,7 @@ jjy_receive ( struct recvbuf *rbufp )
 #ifdef DEBUG
 	printf( "\nrefclock_jjy.c : %s : Len=%d  ", sFunctionName, pp->lencode ) ;
 	for ( i = 0 ; i < pp->lencode ; i ++ ) {
-		if ( iscntrl( pp->a_lastcode[i] & 0x7F ) ) {
+	  if ( iscntrl( (unsigned char)pp->a_lastcode[i] & 0x7F ) ) {
 			printf( "<x%02X>", pp->a_lastcode[i] & 0xFF ) ;
 		} else {
 			printf( "%c", pp->a_lastcode[i] ) ;
@@ -2576,7 +2576,7 @@ static	int 	teljjy_bye_ignore	( struct peer *peer, struct refclockproc *, struct
 static	int 	teljjy_bye_disc 	( struct peer *peer, struct refclockproc *, struct jjyunit * ) ;
 static	int 	teljjy_bye_modem	( struct peer *peer, struct refclockproc *, struct jjyunit * ) ;
 
-static int ( *pTeljjyHandler [ ] [ 5 ] ) ( ) =
+static int ( *pTeljjyHandler [ ] [ 5 ] ) ( struct peer *, struct refclockproc *, struct jjyunit *) =
 {               	/*STATE_IDLE           STATE_DAILOUT       STATE_LOGIN           STATE_CONNECT       STATE_BYE        */
 /* NULL       */	{ teljjy_idle_ignore , teljjy_dial_ignore, teljjy_login_ignore, teljjy_conn_ignore, teljjy_bye_ignore },
 /* START      */	{ teljjy_idle_dialout, teljjy_dial_ignore, teljjy_login_ignore, teljjy_conn_ignore, teljjy_bye_ignore },
@@ -2682,8 +2682,9 @@ jjy_start_telephone ( int unit, struct peer *peer, struct jjyunit *up )
 {
 
 	char	sLog [ 80 ], sFirstThreeDigits [ 4 ] ;
-	int	i, iNumberOfDigitsOfPhoneNumber, iCommaCount, iCommaPosition ;
-	int	iFirstThreeDigitsCount ;
+	int	iNumberOfDigitsOfPhoneNumber, iCommaCount, iCommaPosition ;
+	size_t  i ;
+	size_t	iFirstThreeDigitsCount ;
 
 	jjy_write_clockstats( peer, JJY_CLOCKSTATS_MARK_JJY, "Refclock: Telephone JJY" ) ;
 
@@ -2715,7 +2716,7 @@ jjy_start_telephone ( int unit, struct peer *peer, struct jjyunit *up )
 
 	iNumberOfDigitsOfPhoneNumber = iCommaCount = iCommaPosition = iFirstThreeDigitsCount = 0 ;
 	for ( i = 0 ; i < strlen( sys_phone[0] ) ; i ++ ) {
-		if ( isdigit( *(sys_phone[0]+i) ) ) {
+	  if ( isdigit( (unsigned char)*(sys_phone[0]+i) ) ) {
 			if ( iFirstThreeDigitsCount < sizeof(sFirstThreeDigits)-1 ) {
 				sFirstThreeDigits[iFirstThreeDigitsCount++] = *(sys_phone[0]+i) ;
 			}
@@ -3213,7 +3214,7 @@ static int
 teljjy_login_login ( struct peer *peer, struct refclockproc *pp, struct jjyunit *up )
 {
 
-	char	*pCmd ;
+	const char	*pCmd ;
 	int	iCmdLen ;
 
 	DEBUG_TELJJY_PRINTF( "teljjy_login_login" ) ;
@@ -3665,7 +3666,7 @@ static	int 	modem_esc_data  	( struct peer *, struct refclockproc *, struct jjyu
 static	int 	modem_esc_silent	( struct peer *, struct refclockproc *, struct jjyunit * ) ;
 static	int 	modem_esc_disc  	( struct peer *, struct refclockproc *, struct jjyunit * ) ;
 
-static int ( *pModemHandler [ ] [ 5 ] ) ( ) =
+static int ( *pModemHandler [ ] [ 5 ] ) ( struct peer *, struct refclockproc *, struct jjyunit * ) =
 {                         	/*STATE_DISCONNECT   STATE_INITIALIZE   STATE_DAILING       STATE_CONNECT      STATE_ESCAPE     */
 /* NULL                 */	{ modem_disc_ignore, modem_init_ignore, modem_dial_ignore , modem_conn_ignore, modem_esc_ignore },
 /* INITIALIZE           */	{ modem_disc_init  , modem_init_start , modem_dial_ignore , modem_conn_ignore, modem_esc_ignore },
@@ -3817,7 +3818,7 @@ modem_receive ( struct recvbuf *rbufp )
 	struct	jjyunit		*up;
 	struct	refclockproc	*pp;
 	char	*pBuf ;
-	int	iLen ;
+	size_t	iLen ;
 
 #ifdef DEBUG
 	static const char *sFunctionName = "modem_receive" ;
@@ -3851,11 +3852,11 @@ modem_receive ( struct recvbuf *rbufp )
 #ifdef DEBUG
 	if ( debug ) {
 		char	sResp [ 40 ] ;
-		int	iCopyLen ;
+		size_t	iCopyLen ;
 		iCopyLen = ( iLen <= sizeof(sResp)-1 ? iLen : sizeof(sResp)-1 ) ;
 		strncpy( sResp, pBuf, iLen <= sizeof(sResp)-1 ? iLen : sizeof(sResp)-1 ) ;
 		sResp[iCopyLen] = 0 ;
-		printf ( "refclock_jjy.c : modem_receive : iLen=%d pBuf=[%s] iModemEvent=%d\n", iCopyLen, sResp, up->iModemEvent ) ;
+		printf ( "refclock_jjy.c : modem_receive : iLen=%zu pBuf=[%s] iModemEvent=%d\n", iCopyLen, sResp, up->iModemEvent ) ;
 	}
 #endif
 	modem_control ( peer, pp, up ) ;
@@ -3993,7 +3994,8 @@ static int
 modem_init_resp00 ( struct peer *peer, struct refclockproc *pp, struct jjyunit *up )
 {
 
-	char	*pCmd, cBuf [ 46 ] ;
+	const char *pCmd ;
+	char	cBuf [ 46 ] ;
 	int	iCmdLen ;
 	int	iErrorCorrection, iSpeakerSwitch, iSpeakerVolume ;
 	int	iNextModemState = STAY_MODEM_STATE ;
@@ -4031,7 +4033,7 @@ modem_init_resp00 ( struct peer *peer, struct refclockproc *pp, struct jjyunit *
 		}
 
 		pCmd = cBuf ;
-		snprintf( pCmd, sizeof(cBuf), "ATM%dL%d\r\n", iSpeakerSwitch, iSpeakerVolume ) ;
+		snprintf( cBuf, sizeof(cBuf), "ATM%dL%d\r\n", iSpeakerSwitch, iSpeakerVolume ) ;
 		break ;
 
 	case 3 :
@@ -4060,7 +4062,7 @@ modem_init_resp00 ( struct peer *peer, struct refclockproc *pp, struct jjyunit *
 		}
 
 		pCmd = cBuf ;
-		snprintf( pCmd, sizeof(cBuf), "AT\\N%d\r\n", iErrorCorrection ) ;
+		snprintf( cBuf, sizeof(cBuf), "AT\\N%d\r\n", iErrorCorrection ) ;
 		break ;
 
 	case 7 :
@@ -4251,7 +4253,7 @@ static int
 modem_esc_escape ( struct peer *peer, struct refclockproc *pp, struct jjyunit *up )
 {
 
-	char	*pCmd ;
+	const char	*pCmd ;
 	int	iCmdLen ;
 
 	DEBUG_MODEM_PRINTF( "modem_esc_escape" ) ;
@@ -4317,7 +4319,7 @@ static int
 modem_esc_disc ( struct peer *peer, struct refclockproc *pp, struct jjyunit *up )
 {
 
-	char	*pCmd ;
+	const char	*pCmd ;
 	int	iCmdLen ;
 
 	DEBUG_MODEM_PRINTF( "modem_esc_disc" ) ;
@@ -4350,7 +4352,7 @@ jjy_write_clockstats ( struct peer *peer, int iMark, const char *pData )
 {
 
 	char	sLog [ 100 ] ;
-	char	*pMark ;
+	const char	*pMark ;
 	int 	iMarkLen, iDataLen ;
 
 	switch ( iMark ) {
