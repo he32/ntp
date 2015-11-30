@@ -1180,6 +1180,7 @@ chu_a(
 	int	val;		/* distance */
 	int	temp;
 	int	i, j, k;
+	u_int	l;
 
 	pp = peer->procptr;
 	up = pp->unitptr;
@@ -1259,13 +1260,13 @@ chu_a(
 		up->second = pp->second = 30 + temp;
 		offset.l_ui = 30 + temp;
 		offset.l_uf = 0;
-		i = 0;
+		l = 0;
 		if (k < 0)
 			offset = up->charstamp;
 		else if (k > 0)
-			i = 1;
-		for (; i < nchar && i < k + 10; i++) {
-			up->tstamp[up->ntstamp] = up->cstamp[i];
+			l = 1;
+		for (; l < nchar && l < k + 10; l++) {
+			up->tstamp[up->ntstamp] = up->cstamp[l];
 			L_SUB(&up->tstamp[up->ntstamp], &offset);
 			L_ADD(&offset, &up->charstamp);
 			if (up->ntstamp < MAXSTAGE - 1)
