@@ -189,7 +189,7 @@ find_name(char const * name, tOptions * pOpts, tOptDesc * pOD,
      *  The result gets stashed in a char * pointer.
      */
     uintptr_t   res = name_ct;
-    size_t      len = strlen((char *)name);
+    size_t      len = strlen(name);
     uintptr_t   idx;
 
     if (IS_DEC_DIGIT_CHAR(*name)) {
@@ -215,7 +215,7 @@ find_name(char const * name, tOptions * pOpts, tOptDesc * pOD,
      *  Multiple partial matches means we have an ambiguous match.
      */
     for (idx = 0; idx < name_ct; idx++) {
-        if (strncmp((char *)paz_names[idx], (char *)name, len) == 0) {
+        if (strncmp(paz_names[idx], (const char *)name, len) == 0) {
             if (paz_names[idx][len] == NUL)
                 return idx;  /* full match */
 
