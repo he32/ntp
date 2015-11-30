@@ -184,7 +184,7 @@ optionFindValue(const tOptDesc * odesc, char const * name, char const * val)
     else do {
         tArgList * argl  = odesc->optCookie;
         int        argct = argl->useCt;
-        const void **    poptv = (void **)(argl->apzArgs);
+        const void **    poptv = VOIDP(argl->apzArgs);
 
         if (argct == 0) {
             errno = ENOENT;
@@ -266,7 +266,7 @@ optionFindNextValue(const tOptDesc * odesc, const tOptionValue * pPrevVal,
     else do {
         tArgList * argl = odesc->optCookie;
         int        ct   = argl->useCt;
-        const void **   poptv = (void **)argl->apzArgs;
+        const void **   poptv = VOIDP(argl->apzArgs);
 
         while (--ct >= 0) {
             const tOptionValue * pOV = *(poptv++);
@@ -326,7 +326,7 @@ optionGetValue(tOptionValue const * oov, char const * vname)
 
     if (arg_list->useCt > 0) {
         int     ct     = arg_list->useCt;
-        const void ** ovlist = (void **)(arg_list->apzArgs);
+        const void ** ovlist = VOIDP(arg_list->apzArgs);
 
         if (vname == NULL) {
             res = (const tOptionValue *)*ovlist;
@@ -385,7 +385,7 @@ optionNextValue(tOptionValue const * ov_list,tOptionValue const * oov )
     arg_list = ov_list->v.nestVal;
     {
         int     ct    = arg_list->useCt;
-        const void ** o_list = (void **)(arg_list->apzArgs);
+        const void ** o_list = VOIDP(arg_list->apzArgs);
 
         while (ct-- > 0) {
             const tOptionValue * nov = *(o_list++);
