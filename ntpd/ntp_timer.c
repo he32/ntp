@@ -655,7 +655,7 @@ check_leapsec(
 		sys_tai = lsdata.tai_offs;
 	  } else {
 #ifdef AUTOKEY
-		update_autokey = (sys_tai != lsdata.tai_offs);
+	    update_autokey = (sys_tai != (u_int)lsdata.tai_offs);
 #endif
 		lsprox  = lsdata.proximity;
 		sys_tai = lsdata.tai_offs;
