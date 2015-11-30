@@ -70,7 +70,7 @@ str_const_to_ul (cch_t * str, cch_t ** ppz, int base)
 static long
 str_const_to_l (cch_t * str, cch_t ** ppz, int base)
 {
-  char pz;
+  char *pz;
   int rv = strtol (str, &pz, base);
   *ppz = pz;
   return rv;
