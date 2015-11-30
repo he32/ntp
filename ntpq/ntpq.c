@@ -364,7 +364,7 @@ u_int numassoc;		/* number of cached associations */
 /*
  * For commands typed on the command line (with the -c option)
  */
-int numcmds = 0;
+size_t numcmds = 0;
 const char *ccmds[MAXCMDS];
 #define	ADDCMD(cp)	if (numcmds < MAXCMDS) ccmds[numcmds++] = (cp)
 
@@ -448,7 +448,7 @@ ntpqmain(
 	)
 {
 	u_int ihost;
-	int icmd;
+	size_t icmd;
 
 
 #ifdef SYS_VXWORKS
@@ -471,7 +471,8 @@ ntpqmain(
 
 	{
 	    char *list;
-	    char *msg, *fmt;
+	    char *msg;
+	    const char *fmt;
 
 	    list = list_digest_names();
 	    for (icmd = 0; icmd < sizeof(builtins)/sizeof(builtins[0]); icmd++) {
@@ -485,13 +486,15 @@ ntpqmain(
 
 #ifdef OPENSSL
 	    builtins[icmd].desc[0] = "digest-name";
-	    fmt = "set key type to use for authenticated requests, one of:%s";
+	    fmt = ", one of:";
 #else
 	    builtins[icmd].desc[0] = "md5";
-	    fmt = "set key type to use for authenticated requests (%s)";
+	    fmt = ":";
 #endif
 	    msg = emalloc(strlen(fmt) + strlen(list) - strlen("%s") +1);
-	    sprintf(msg, fmt, list);
+	    sprintf(msg,
+		    "set key type to use for authenticated requests%s %s",
+		    fmt, list);
 	    builtins[icmd].comment = msg;
 	    free(list);
 	}
@@ -3496,7 +3499,7 @@ static void list_md_fn(const EVP_MD *m, const char *from, const char *to, void *
     /* Lowercase names aren't accepted by keytype_from_text in ssl_init.c */
 
     for( cp = name; *cp; cp++ ) {
-	if( islower(*cp) )
+	if( islower((unsigned char)*cp) )
 	    return;
     }
     len = (cp - name) + 1;
