@@ -1509,7 +1509,7 @@ process_version(
  */
 	snprintf(up->buffer, sizeof(up->buffer),
 	    "?WATCH={\"device\":\"%s\",\"enable\":true,\"json\":true%s};\r\n",
-	    up->device, up->pt_toff ? ",\"pps\":true" : "");
+	    up->device, up->pf_toff ? ",\"pps\":true" : "");
 	buf = up->buffer;
 	len = strlen(buf);
 	log_data(peer, "send", buf, len);
