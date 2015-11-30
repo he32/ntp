@@ -702,7 +702,7 @@ jjy_receive ( struct recvbuf *rbufp )
 				up->iLineBufLen ++ ;
 
 				/* Copy printable characters */
-				if ( ! iscntrl( up->sRawBuf[i] ) ) {
+				if ( ! iscntrl( (unsigned char)up->sRawBuf[i] ) ) {
 					up->sTextBuf[up->iTextBufLen] = up->sRawBuf[i] ;
 					up->iTextBufLen ++ ;
 				}
