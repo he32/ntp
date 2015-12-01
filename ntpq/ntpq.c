@@ -491,10 +491,11 @@ ntpqmain(
 	    builtins[icmd].desc[0] = "md5";
 	    fmt = ":";
 #endif
-	    msg = emalloc(strlen(fmt) + strlen(list) - strlen("%s") +1);
-	    sprintf(msg,
-		    "set key type to use for authenticated requests%s %s",
-		    fmt, list);
+#define FMT_STRING "set key type to use for authenticated requests%s %s"
+	    msg = emalloc(strlen(FMT_STRING) + strlen(fmt) + 
+			  strlen(list) - strlen("%s") +1);
+	    sprintf(msg, FMT_STRING, fmt, list);
+#undef FMT_STRING
 	    builtins[icmd].comment = msg;
 	    free(list);
 	}
