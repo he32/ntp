@@ -125,7 +125,14 @@ harvest_child_status(
 		/* Wait on the child so it can finish terminating */
 		if (waitpid(c->pid, NULL, 0) == c->pid)
 			TRACE(4, ("harvested child %d\n", c->pid));
-		else msyslog(LOG_ERR, "error waiting on child %d: %m", c->pid);
+		else if (errno != ECHILD) {
+			/*
+			 * SIG_IGN on SIGCHLD on some OSes means do not wait
+			 * but reap automatically.
+			 */
+			msyslog(LOG_ERR, "error waiting on child %d: %m", c->pid);
+		}
+		c->pid = 0;
 	}
 }
 
@@ -162,7 +169,6 @@ cleanup_after_child(
 		close(c->resp_read_pipe);
 		c->resp_read_pipe = -1;
 	}
-	c->pid = 0;
 	c->resp_read_ctx = NULL;
 	DEBUG_INSIST(-1 == c->req_read_pipe);
 	DEBUG_INSIST(-1 == c->resp_write_pipe);
